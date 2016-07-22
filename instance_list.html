@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>instance-list页面</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/index.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-blue" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">Monitor</a>
+   </div>
+   <div>
+      <ul class="nav navbar-nav">
+   			<li class="dropdown" id="instance_li">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Instance<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu" >
+               <li><a href="instance_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="instance_add.html">Add</a></li>
+            </ul>
+         </li>
+        
+         <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Host <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="host_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="host_add.html">Add</a></li>
+            </ul>
+         </li>
+      </ul>
+   </div>
+   <input  class="search-btn" type="button" value="Search" >
+   <input  class="search-text" type="text" value="" placeholder="Search"/>
+</nav>
+<table class="table" style="width:88%;margin:auto;margin-top:50px;">
+   <thead>
+      <tr>
+         <th>name</th>
+         <th>url</th>
+         <th>maxConn</th>
+         <th>frequency</th>
+         <th>email</th>
+         <th>删除</th>
+      </tr>
+   </thead>
+   <tbody id="instance_tb">
+      
+   </tbody>
+</table>
+<script type="text/javascript">
+  $(document).ready(function(){
+      var rootUrl = "";
+      if(location.href.indexOf("localhost")>0||location.href.indexOf("127.0.0.1")>0){
+        rootUrl = "";
+      }
+      else{
+        rootUrl = "http://121.40.112.242:8080/";
+      }
+      $('#instance_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
+      $('.dropdown').hover(
+          function () {
+            $('.dropdown a').css({'color': '#000'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#fff"});
+            $(this).find('.dropdown-menu').show();
+         },
+          function () {
+            $('.dropdown a').css({'color': '#fff'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#428bca"});
+            $('#instance_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
+            $(this).find('.dropdown-menu').hide();
+         }          
+      );
+      $.ajax({
+         type: "post",
+         url: rootUrl+'monitor/instance/list', 
+         success: function(data){
+             console.log(data);
+             console.log(data.result);
+             for (var i = 0; i < data.result.length; i++) {
+               var tr = '<tr><td><a data-id="'+data.result[i].id+'">'+data.result[i].name+'</a></td><td>'+data.result[i].url+'</td><td>'+data.result[i].maxConn+'</td><td>'+data.result[i].frequency+'</td><td>'+data.result[i].email+'</td><td><a class="instance-delete" data-id="'+data.result[i].id+'">'+"删除"+'</a></td></tr>';
+               $('#instance_tb').append(tr);
+             };
+         }
+      });
+      $("#instance_tb").on("click","tr td:nth-child(1) a",function(e){
+        var locationArr = location.href.split("/");
+        var id = this.dataset.id;
+        console.log(id);
+        if(window.localStorage){
+          localStorage.setItem("editId",id);
+        }
+        locationArr[locationArr.length-1] = "instance_edit.html";
+          location.href= locationArr.join("/");
+      });
+       $("#instance_tb").on("click","tr td:nth-child(6) a",function(e){
+          var id = this.dataset.id;
+          console.log(id);
+          if(confirm("是否要删除数据")){
+              $.ajax({
+               type: "post",
+               url: rootUrl+'monitor/instance/delete/'+id,
+               success: function(data){
+                  if(data.flag == true){
+                     alert("删除成功");
+                     window.location.reload()
+                  }
+               }
+             });
+          }
+     });
+   });   
+</script>
+</body>
+</html>

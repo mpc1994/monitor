@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>host-list页面</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/index.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-blue" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">Monitor</a>
+   </div>
+   <div>
+      <ul class="nav navbar-nav">
+   			<li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Instance<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="instance_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="instance_add.html">Add</a></li>
+            </ul>
+         </li>
+        
+         <li class="dropdown" id="host_li">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Host <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="host_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="host_add.html">Add</a></li>
+            </ul>
+         </li>
+      </ul>
+   </div>
+   <input  class="search-btn" type="button" value="Search" >
+   <input  class="search-text" type="text" value="" placeholder="Search"/>
+</nav>
+<table class="table" style="width:88%;margin:auto;margin-top:50px;">
+   <thead>
+      <tr>
+         <th>id</th>
+         <th>name</th>
+         <th>ip</th>
+         <th>port</th>
+         <th>删除</th>
+      </tr>
+
+
+   </thead>
+   <tbody id="host_tb">
+
+   </tbody>
+</table>
+<script type="text/javascript">
+  $(document).ready(function(){
+      var rootUrl = "";
+      if(location.href.indexOf("localhost")>0||location.href.indexOf("127.0.0.1")>0){
+        rootUrl = "";
+      }
+      else{
+        rootUrl = "http://121.40.112.242:8080/";
+      }
+
+      $('#host_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
+      $('.dropdown').hover(
+          function () {
+            $('.dropdown a').css({'color': '#000'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#fff"});
+            $(this).find('.dropdown-menu').show();
+         },
+          function () {
+            $('.dropdown a').css({'color': '#fff'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#428bca"});
+            $('#host_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
+            $(this).find('.dropdown-menu').hide();
+         }          
+      );
+      $.ajax({
+         type: "post",
+         url: rootUrl+'/monitor/hostInfo/list',
+         success: function(data){
+             console.log(data);
+             console.log(data.result);
+             for (var i = 0; i < data.result.length; i++) {
+    
+               //！！！！！！dataset 方式
+               var tr = '<tr><td><a data-id="'+data.result[i].id+'">'+data.result[i].id+'</a></td><td>'+data.result[i].name+'</td><td>'+data.result[i].ip+'</td><td>'+data.result[i].port+'</td><td><a class="host-delete" data-id="'+data.result[i].id+'">'+"删除"+'</a></td></tr>';
+               $('#host_tb').append(tr);
+             };
+         }
+      });
+      $("#host_tb").on("click","tr td:nth-child(1) a",function(e){
+         //！！！！！！localstorage写法
+          var locationArr = location.href.split("/");
+          console.log(this);//this是dom对象 dataset和dom'元素结合使用  $(this)是jquery对象
+          //获取data-id中的内容
+          var id = this.dataset.id;
+          console.log(id);
+          
+          if(window.localStorage){//判断浏高级浏览器支持 览器是否支持 存储在本地
+              localStorage.setItem("editId",id);
+          }
+          locationArr[locationArr.length-1] = "host_edit.html";
+          location.href= locationArr.join("/");   
+      });
+   
+     $("#host_tb").on("click","tr td:nth-child(5) a",function(e){
+          var id = this.dataset.id;
+          console.log(id);
+          if(confirm("是否要删除数据")){
+              $.ajax({
+               type: "post",
+               url: rootUrl+'monitor/hostInfo/delete/'+id,
+               success: function(data){
+                  if(data.flag == true){
+                     alert("删除成功");
+                     window.location.reload()
+                  }
+                   console.log(data);
+                   console.log(data.result);
+                   console.log(data.result.name);
+                   console.log(data.result.ip);
+                   console.log(data.result.port);
+               }
+             });
+          }
+     });
+
+   });   
+</script>
+</body>
+</html>
