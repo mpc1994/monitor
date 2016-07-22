@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add页面</title>
+    <title>host_add页面</title>
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/index.css">
     <script type="text/javascript" src="js/jquery.min.js"></script>
@@ -10,7 +10,7 @@
 <body>
 <nav class="navbar navbar-blue" role="navigation">
    <div class="navbar-header">
-      <a class="navbar-brand" href="#">Monitor</a>
+      <a class="navbar-brand" href="index.html">Monitor</a>
    </div>
    <div>
       <ul class="nav navbar-nav">
@@ -19,20 +19,20 @@
                Instance<b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
-               <li><a href="#">List</a></li>
+               <li><a href="instance_list.html">List</a></li>
                <li class="divider"></li>
-               <li><a href="#">Add</a></li>
+               <li><a href="instance_add.html">Add</a></li>
             </ul>
          </li>
         
-         <li class="dropdown">
+         <li class="dropdown" id="host_li">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-               HOST <b class="caret"></b>
+               Host <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
-               <li><a href="#">List</a></li>
+               <li><a href="host_list.html">List</a></li>
                <li class="divider"></li>
-               <li><a href="#">Add</a></li>
+               <li><a href="host_add.html">Add</a></li>
             </ul>
          </li>
       </ul>
@@ -68,6 +68,18 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
+      //判断开发环境还是正式环境
+      //开发环境 url地址里带有localhost
+      //正式环境没有这个
+      var rootUrl = "";
+      if(location.href.indexOf("localhost")>0||location.href.indexOf("127.0.0.1")>0){
+        rootUrl = "";
+      }else{
+        rootUrl = "http://121.40.112.242:8080/";
+      }
+
+      console.log(["rootUrl",rootUrl]);
+      $('#host_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
       $('.dropdown').hover(
           function () {
             $('.dropdown a').css({'color': '#000'});
@@ -77,21 +89,22 @@
           function () {
             $('.dropdown a').css({'color': '#fff'});
             $(this).find('.dropdown-toggle').css({"background-color":"#428bca"});
+            $('#host_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
             $(this).find('.dropdown-menu').hide();
          }          
       );
       $("#host_submit").click(function(){
+        console.log(["rootUrl",rootUrl]);
           $.ajax({
                type: "post",
-               url: 'http://121.40.112.242:8080/monitor/hostInfo/save',
+               url: rootUrl+'monitor/instance/save',
                data:{ip:$("#host_ip").val(),port:$("#host_port").val(),name:$('#host_name').val()},
-               dataType:'jsonp',
-               jsonp: "callback",
                success: function(data){
                    console.log(data);
+                   console.log(data.result);
                    if(data.flag == true){
                       var locationArr = location.href.split("/");
-                      locationArr[locationArr.length-1] = "home.html";
+                      locationArr[locationArr.length-1] = "host_list.html";
                       location.href= locationArr.join("/");
                    }
                    else{

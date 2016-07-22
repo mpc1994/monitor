@@ -2,43 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>登录</title>
+    <title>欢迎</title>
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/index.css">
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/login.js"></script>
 </head>
-<body>
-    <div class="login-wrap">
-        <form class="form-horizontal">
-            <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">用户名</label>
-                <div class="col-sm-10">
-                    <input type="email" class="form-control" id="inputEmail3" placeholder="用户名">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword3" class="col-sm-2 control-label">密码</label>
-                <div class="col-sm-10">
-                    <input type="password" class="form-control" id="inputPassword3" placeholder="密码">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox"> 记住我
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <div class="btn btn-default" id="login">登录</div>
-                </div>
-            </div>
-        </form>
-    </div>
+<body style="text-align:center;">
+    <nav class="navbar navbar-blue" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">Monitor</a>
+   </div>
+   <div>
+      <ul class="nav navbar-nav">
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Instance<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="instance_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="instance_add.html">Add</a></li>
+            </ul>
+         </li>
+        
+         <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Host <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="host_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="host_add.html">Add</a></li>
+            </ul>
+         </li>
+      </ul>
+   </div>
+   <input  class="search-btn" type="button" value="Search" >
+   <input  class="search-text" type="text" value="" placeholder="Search"/>
+</nav>
+<div><h3>Welcome to monitor</h3></div>
+<script type="text/javascript">
+ $('.dropdown').hover(
+          function () {
+            $('.dropdown a').css({'color': '#000'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#fff"});
+            $(this).find('.dropdown-menu').show();
+         },
+          function () {
+            $('.dropdown a').css({'color': '#fff'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#428bca"});
+            $(this).find('.dropdown-menu').hide();
+         }          
+      );
+</script>
+
 </body>
 </html>
