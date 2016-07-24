@@ -10,7 +10,7 @@
 <body>
 <nav class="navbar navbar-blue" role="navigation">
    <div class="navbar-header">
-      <a class="navbar-brand" href="index.html">Monitor</a>
+      <a class="navbar-brand" href="index_charts.html">Monitor</a>
    </div>
    <div>
       <ul class="nav navbar-nav">
@@ -44,7 +44,14 @@
    <div class="form-group">
       <label for="firstname" class="col-sm-2 control-label lable-font">Name:</label>
       <div class="col-sm-10">
-         <input type="text" class="form-control form-size" id="instance_name">
+       <input type="text" class="form-control form-size" id="instance_name">
+      </div>
+   </div>
+   <div class="form-group">
+      <label for="firstname" class="col-sm-2 control-label lable-font">Host:</label>
+      <div class="col-sm-10">
+       <select class="form-control form-size" id="instance_host">
+      </select>
       </div>
    </div>
    <div class="form-group">
@@ -79,6 +86,7 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
+
     var rootUrl = "";
       if(location.href.indexOf("localhost")>0||location.href.indexOf("127.0.0.1")>0){
         rootUrl = "";
@@ -101,14 +109,14 @@
             $(this).find('.dropdown-menu').hide();
          }          
       );
+
           $("#instance_submit").click(function(){
           $.ajax({
                type: "post",
                url: rootUrl+'monitor/instance/save',
-               data:JSON.stringify({name:$("#instance_name").val(),Url:$("#instance_Url").val(),maxConn:$('#instance_maxConn').val(),frequency:$("#instance_frequency").val(),email:$("#instance_email").val()}),
+               data:{name:$("#instance_name").val(),hostId:$("instance_host").val(),url:$("#instance_Url").val(),maxConn:$('#instance_maxConn').val(),frequency:$("#instance_frequency").val(),email:$("#instance_email").val()},
                success: function(data){
                    console.log(data);
-                   return ;
                    if(data.flag == true){
                       var locationArr = location.href.split("/");
                       locationArr[locationArr.length-1] = "instance_list.html";
@@ -121,6 +129,19 @@
                
           });
       });
+         $.ajax({
+         type: "post",
+         url: rootUrl+'/monitor/hostInfo/list',
+         success: function(data){
+             console.log(data);
+             console.log(data.result);
+             for (var i = 0; i < data.result.length; i++) {
+              $('select').append('<option value="' + data.result[i].id + '">'+data.result[i].name+'</option>');
+           
+             };
+         }
+      });
+      
    });   
 </script>
 </body>

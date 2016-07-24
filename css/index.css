@@ -50,3 +50,8 @@
  #instance_tb a{
  	cursor:pointer;
  }
+ .charts_con{
+ 	margin: 0 auto;
+ 	width:88%;
+ 	margin-top:100px;
+ }

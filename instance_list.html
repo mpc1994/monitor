@@ -10,7 +10,7 @@
 <body>
 <nav class="navbar navbar-blue" role="navigation">
    <div class="navbar-header">
-      <a class="navbar-brand" href="index.html">Monitor</a>
+      <a class="navbar-brand" href="index_charts.html">Monitor</a>
    </div>
    <div>
       <ul class="nav navbar-nav">
@@ -82,8 +82,6 @@
          type: "post",
          url: rootUrl+'monitor/instance/list', 
          success: function(data){
-             console.log(data);
-             console.log(data.result);
              for (var i = 0; i < data.result.length; i++) {
                var tr = '<tr><td><a data-id="'+data.result[i].id+'">'+data.result[i].name+'</a></td><td>'+data.result[i].url+'</td><td>'+data.result[i].maxConn+'</td><td>'+data.result[i].frequency+'</td><td>'+data.result[i].email+'</td><td><a class="instance-delete" data-id="'+data.result[i].id+'">'+"删除"+'</a></td></tr>';
                $('#instance_tb').append(tr);
@@ -93,7 +91,6 @@
       $("#instance_tb").on("click","tr td:nth-child(1) a",function(e){
         var locationArr = location.href.split("/");
         var id = this.dataset.id;
-        console.log(id);
         if(window.localStorage){
           localStorage.setItem("editId",id);
         }

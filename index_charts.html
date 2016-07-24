@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/index.css">
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/login.js"></script>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+  <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script> 
+</head>
+<body>
+	<nav class="navbar navbar-blue" role="navigation">
+   <div class="navbar-header">
+      <a class="navbar-brand" href="index_charts.html">Monitor</a>
+   </div>
+   <div>
+      <ul class="nav navbar-nav">
+   			<li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Instance<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="instance_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="instance_add.html">Add</a></li>
+            </ul>
+         </li>
+        
+         <li class="dropdown" id="host_li">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Host <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="host_list.html">List</a></li>
+               <li class="divider"></li>
+               <li><a href="host_add.html">Add</a></li>
+            </ul>
+         </li>
+      </ul>
+   </div>
+   <input  class="search-btn" type="button" value="Search" >
+   <input  class="search-text" type="text" value="" placeholder="Search"/>
+</nav>
+<div id="container">
+  
+</div>
+  <script>
+    $(document).ready(function(){
+
+      var rootUrl = "";
+      if(location.href.indexOf("localhost")>0||location.href.indexOf("127.0.0.1")>0){
+        rootUrl = "";
+      }
+      else{
+        rootUrl = "http://121.40.112.242:8080/";
+      }
+
+    	$('#host_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
+      $('.dropdown').hover(
+          function () {
+            $('.dropdown a').css({'color': '#000'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#fff"});
+            $(this).find('.dropdown-menu').show();
+         },
+          function () {
+            $('.dropdown a').css({'color': '#fff'});
+            $(this).find('.dropdown-toggle').css({"background-color":"#428bca"});
+            $('#host_li').find('.dropdown-toggle').css({"background-color":"#fff",'color': '#000'});
+            $(this).find('.dropdown-menu').hide();
+         }          
+      );
+       $.ajax({
+         type: "post",
+         url: rootUrl+'/monitor/instance/list',
+         success: function(data){
+             for (var i = 0; i < data.result.length; i++) {
+               var id = data.result[i].id;
+               var name = data.result[i].name;
+              $("#container").append('<div id="charts_'+id+'" style="min-width:700px;height:400px;" class="charts_con"></div>');
+              drawCharts(data.result[i]);
+            };//for
+         }
+      });//ajax
+      function drawCharts(obj){
+          $.ajax({
+                   type: "get",
+                   url: rootUrl+'/monitor/instance/getHeartbeatData/'+obj.id,
+                   success: function(logdata){
+                       var yAxisdata=[];
+                       var xAxisdata=[];
+                       for (var i = 0; i < logdata.result.length; i++) {
+                          yAxisdata.push(logdata.result[i].connTime);
+                          xAxisdata.push(logdata.result[i].createTime.split(' ')[1]);
+                       };
+                       $('#charts_'+obj.id).highcharts({
+                            title: {
+                                text: obj.name+' Instance Monitor',
+                                x: -20 //center
+                            },
+                            xAxis: {
+                                categories: xAxisdata
+                            },
+                            yAxis: {
+                                title: {
+                                    text: 'connTime(ms)'
+                                },
+                                plotLines: [{
+                                    value: 0,
+                                    width: 1,
+                                    color: '#808080'
+                                }]
+                            },
+                            tooltip: {
+                                valueSuffix: 'ms'
+                            },
+                            legend: {
+                                layout: 'vertical',
+                                align: 'right',
+                                verticalAlign: 'middle',
+                                borderWidth: 0
+                            },
+                            series: [{
+                                name: obj.name ,
+                                data: yAxisdata
+                           }]
+                     });
+
+                  }
+          });//ajax
+      }
+});
+  </script>
+</body>
+</html>
